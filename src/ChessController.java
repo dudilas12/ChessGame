@@ -25,6 +25,11 @@ public class ChessController {
     final static int BOARD_Y = 8;
     public static Position[][] grid = new Position[BOARD_X][BOARD_Y];
 
+    Player whitePlayer = new Player();
+
+    Player blackPlayer = new Player();
+
+
 
 
     public void initialize() {
@@ -92,6 +97,7 @@ public class ChessController {
         grid[BOARD_X -1][4].setPiece(new BlackKing(grid[BOARD_X -1][4]));
 
 
+        updatePlayers();
 
         updateView();
 
@@ -109,10 +115,14 @@ public class ChessController {
     private Position errorTarget = null;
     private boolean isError = false;
 
+    Player currentPlayer = whitePlayer;
+
     private int errorIndex = 0;
 
     public void handlePiece(ActionEvent actionEvent)
     {
+
+
         Position pos = (Position)actionEvent.getSource();
 
         if(start == null){
@@ -121,7 +131,7 @@ public class ChessController {
                 endError(errorIndex);
 
             }
-            if(pos.getPiece() == null) return;
+            if(!currentPlayer.containsPiece(pos.getPiece())) return;
             pos.setStyle("-fx-border-color: black; -fx-border-width: 5px");
             start = pos;
         }
@@ -129,23 +139,20 @@ public class ChessController {
         {
             target = pos;
             if(start == target) return;
-            else if(!start.getPiece().isMove(target))
+            else if(!currentPlayer.isMove(start, target))
                 error();
             else
             {
-
-                Piece moved = start.getPiece();
-                moved.setPos(target);
-                target.setPiece(moved);
-                start.setPiece(null);
-                updateView();
-                start.setStyle("-fx-border-color: black;");
+                movePiece(start,target);
+                currentPlayer = (currentPlayer == whitePlayer ? blackPlayer : whitePlayer);
 
             }
 
             start = null;
 
         }
+
+
 
 
 
@@ -200,6 +207,36 @@ public class ChessController {
 
     }
 
+
+    private void movePiece(Position start, Position target)
+    {
+        Piece moved = start.getPiece();
+        moved.setPos(target);
+        try{
+            target.getPiece().setPos(null);}
+        catch(NullPointerException e)
+        {
+
+        }
+        target.setPiece(moved);
+        start.setPiece(null);
+        updateView();
+        start.setStyle("-fx-border-color: black;");
+    }
+
+
+    private void updatePlayers()
+    {
+        for(int i = 0; i < BOARD_X ; i++)
+            for(int j = 0; j < BOARD_Y ; j++)
+            {
+                Piece currentPiece = grid[i][j].getPiece();
+                if(currentPiece== null) continue;
+                else if(currentPiece instanceof White) whitePlayer.addPiece(currentPiece);
+                else if(currentPiece instanceof Black) blackPlayer.addPiece(currentPiece);
+
+            }
+    }
     public void foo(String s)
     {
         System.out.println(s);
