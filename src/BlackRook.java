@@ -9,6 +9,8 @@ public class BlackRook extends Piece implements Black {
     public boolean isMove(Position pos)
     {
 
+        if(this.pos == null)
+            return false;
         if(pos.getPiece() instanceof Black) return false;
 
         if(super.pos.getX() == pos.getX()) {

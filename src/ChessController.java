@@ -144,7 +144,24 @@ public class ChessController {
             else
             {
                 movePiece(start,target);
+
+                currentPlayer.updateAlive();
+
+                if(currentPlayer.kingChecked())
+                    currentPlayer.getKing().getPos().setStyle("-fx-border-color: red; -fx-border-width: 5px");
+                else currentPlayer.getKing().getPos().setStyle("-fx-border-color: black;");
+
+
                 currentPlayer = (currentPlayer == whitePlayer ? blackPlayer : whitePlayer);
+
+                if(currentPlayer.kingChecked())
+                    currentPlayer.getKing().getPos().setStyle("-fx-border-color: red; -fx-border-width: 5px");
+                else currentPlayer.getKing().getPos().setStyle("-fx-border-color: black;");
+
+
+
+                updateView();
+                start.setStyle("-fx-border-color: black;");
 
             }
 
@@ -177,6 +194,7 @@ public class ChessController {
         );
 
         timeline.play();
+
     }
 
     public void endError(int errorIndex)
@@ -187,9 +205,10 @@ public class ChessController {
         errorStart.setStyle("-fx-border-color: black;");
         errorTarget.setStyle("-fx-border-color: black;");
         this.errorIndex ++;
+        updateView();
     }
 
-    public void updateView()
+    public static void updateView()
     {
         for(int i = 0; i < BOARD_X ; i++)
             for(int j = 0; j<BOARD_Y; j++)
@@ -208,7 +227,7 @@ public class ChessController {
     }
 
 
-    private void movePiece(Position start, Position target)
+    public static void movePiece(Position start, Position target)
     {
         Piece moved = start.getPiece();
         moved.setPos(target);
@@ -220,8 +239,7 @@ public class ChessController {
         }
         target.setPiece(moved);
         start.setPiece(null);
-        updateView();
-        start.setStyle("-fx-border-color: black;");
+
     }
 
 
@@ -236,6 +254,10 @@ public class ChessController {
                 else if(currentPiece instanceof Black) blackPlayer.addPiece(currentPiece);
 
             }
+
+        whitePlayer.setOpponent(blackPlayer);
+
+        blackPlayer.setOpponent(whitePlayer);
     }
     public void foo(String s)
     {

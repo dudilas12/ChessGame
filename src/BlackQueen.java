@@ -8,7 +8,8 @@ public class BlackQueen extends Piece implements Black {
 
     public boolean isMove(Position pos)
     {
-
+        if(this.pos == null)
+            return false;
         Piece rook_sim = new BlackRook(super.pos);
         Piece bishop_sim = new BlackBishop(super.pos);
 
